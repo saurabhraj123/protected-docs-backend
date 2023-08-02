@@ -1,12 +1,19 @@
 // Library imports
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
+var jwt = require("jsonwebtoken");
 
 // Local imports
 const pool = require("../db");
-const { getRoomIdQuery, getPasswordQuery } = require("../db/queries");
+const {
+  getRoomIdQuery,
+  getPasswordQuery,
+  getAllDocumentsQuery,
+  getDocumentQuery,
+} = require("../db/queries");
 const { validateUserQuery } = require("../db/queries");
-const { createRoomMutation } = require("../db/mutations");
+const { createRoomMutation, deleteRoomMutation } = require("../db/mutations");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 router.get("/:roomName", async (req, res) => {
   try {
@@ -21,17 +28,21 @@ router.get("/:roomName", async (req, res) => {
   }
 });
 
-router.post("/create/:roomName", async (req, res) => {
+router.post("/create", async (req, res) => {
   try {
-    const roomName = req.params.roomName;
-    const { password } = req.body;
+    const { roomName, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await pool.query(createRoomMutation(), [roomName, hashedPassword]);
     const [room] = await pool.query(getRoomIdQuery(), [roomName]);
 
-    res.status(200).json({ id: room[0].id });
+    const token = jwt.sign(
+      { roomId: room[0].id, roomName },
+      process.env.JWT_SECRET
+    );
+
+    res.status(200).json({ roomId: room[0].id, token });
   } catch (err) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -49,9 +60,30 @@ router.post("/auth/:roomName", async (req, res) => {
     if (!isValidPassword)
       return res.status(401).send({ error: "Invalid password" });
 
-    res.status(200).json({ id: result[0].id, roomName: roomName });
+    const [room] = await pool.query(getRoomIdQuery(), [roomName]);
+    const token = jwt.sign(
+      { roomId: room[0].id, roomName },
+      process.env.JWT_SECRET
+    );
+
+    res.status(200).json({ token });
   } catch (err) {
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.delete("/delete", authMiddleware, async (req, res) => {
+  try {
+    const roomId = req.user.roomId;
+
+    const [result] = await pool.query(deleteRoomMutation(), [roomId]);
+
+    if (result.affectedRows === 0)
+      res.status(401).json({ error: "Room doesn't exist" });
+
+    res.status(200).json({ id: roomId, message: "Room deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error", err });
   }
 });
 

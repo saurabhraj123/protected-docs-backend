@@ -1,13 +1,21 @@
 const createDocumentMutation = () => {
-  return `INSERT INTO Documents (room_id, title, data) VALUES (?, ?, ?); `;
+  return `INSERT INTO Documents (room_id, title, content) VALUES (?, ?, ?); `;
 };
 
-const updateDocumentMutation = () => {
-  return `UPDATE Documents SET data = ? WHERE id = ?`;
+const updateDocumentContentMutation = () => {
+  return `UPDATE Documents SET content = ? WHERE id = ?`;
+};
+
+const updateDocumentTitleMutation = () => {
+  return `UPDATE Documents SET title = ? WHERE id = ?`;
 };
 
 const deleteDocumentMutation = () => {
   return `DELETE FROM Documents WHERE id = ?`;
+};
+
+const deleteRoomMutation = () => {
+  return `DELETE FROM Rooms WHERE id = ?`;
 };
 
 const createRoomMutation = () => {
@@ -16,7 +24,9 @@ const createRoomMutation = () => {
 
 module.exports = {
   createDocumentMutation,
-  updateDocumentMutation,
+  updateDocumentTitleMutation,
+  updateDocumentContentMutation,
   deleteDocumentMutation,
   createRoomMutation,
+  deleteRoomMutation,
 };

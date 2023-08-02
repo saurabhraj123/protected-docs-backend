@@ -1,9 +1,9 @@
 const getAllDocumentsQuery = () => {
-  return `SELECT id, title FROM Documents where room_name = ?`;
+  return `SELECT id, title FROM Documents where room_id = ?`;
 };
 
 const getDocumentQuery = () => {
-  return `SELECT data FROM Documents where id = ?`;
+  return `SELECT content FROM Documents where id = ?`;
 };
 
 const getRoomIdQuery = () => {
