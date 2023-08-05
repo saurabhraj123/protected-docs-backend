@@ -20,17 +20,20 @@ router.get("/:roomName", async (req, res) => {
     const roomName = req.params.roomName;
     const [room] = await pool.query(getRoomIdQuery(), [roomName]);
 
-    if (room.length === 0) res.status(401).json({ error: "Room not found" });
+    if (room.length === 0) res.status(404).json({ error: "Room not found" });
 
-    res.status(200).json(room);
+    res.status(200).json(room[0]);
   } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error", err });
   }
 });
 
 router.post("/create", async (req, res) => {
   try {
     const { roomName, password } = req.body;
+
+    if (password === "")
+      return res.status(400).json({ error: "Password cannot be empty" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 

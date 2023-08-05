@@ -17,12 +17,6 @@ router.get("/", authMiddleware, async (req, res) => {
   try {
     const roomId = req.user.roomId;
 
-    console.log("roomId", roomId);
-
-    // const [room] = await pool.query(getRoomIdQuery(), [roomName]);
-
-    // if (room.length === 0) res.status(401).json({ error: "Room not found" });
-
     const [documents] = await pool.query(getAllDocumentsQuery(), [roomId]);
 
     res.status(200).json({ roomId, documents });
