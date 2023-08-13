@@ -61,6 +61,8 @@ io.on("connection", (socket) => {
         JSON.stringify(data),
         documentId,
       ]);
+
+      socket.emit("changes-saved");
     });
   });
 });
