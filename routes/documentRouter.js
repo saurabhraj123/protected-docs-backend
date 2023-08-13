@@ -54,7 +54,9 @@ router.post("/create", authMiddleware, async (req, res) => {
     if (result.length === 0)
       res.status(401).json({ error: "Document not created" });
 
-    res.status(200).json({ id: result.insertId, message: "Document created" });
+    res
+      .status(200)
+      .json({ id: result.insertId, title, message: "Document created" });
   } catch (err) {
     res.status(500).json({ error: "Internal Server Error", msg: err.message });
   }
