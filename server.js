@@ -19,7 +19,7 @@ const pool = require("./db");
 const { isValidToken } = require("./utils/utils");
 const { getDocumentQuery } = require("./db/queries");
 const { updateDocumentContentMutation } = require("./db/mutations");
-const io = require("socket.io")(3001, {
+const io = require("socket.io")(10001, {
   cors: `${process.env.FRONTEND_URI}`,
   methods: ["GET", "POST"],
 });
