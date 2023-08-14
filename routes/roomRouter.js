@@ -47,7 +47,7 @@ router.post("/create", async (req, res) => {
 
     res.status(200).json({ roomId: room[0].id, token });
   } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error", err });
   }
 });
 
