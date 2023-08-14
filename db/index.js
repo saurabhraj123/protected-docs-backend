@@ -2,10 +2,10 @@ const mysql = require("mysql2");
 
 const pool = mysql
   .createPool({
-    host: "localhost",
-    user: "root",
-    database: "protected_docs",
-    password: "1234567890",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
     connectionLimit: 10,
   })
   .promise();
