@@ -12,7 +12,11 @@ const {
   getDocumentQuery,
 } = require("../db/queries");
 const { validateUserQuery } = require("../db/queries");
-const { createRoomMutation, deleteRoomMutation } = require("../db/mutations");
+const {
+  createRoomMutation,
+  deleteRoomMutation,
+  updateRoomPasswordMutation,
+} = require("../db/mutations");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 router.get("/:roomName", async (req, res) => {
@@ -72,6 +76,24 @@ router.post("/auth/:roomName", async (req, res) => {
     res.status(200).json({ token });
   } catch (err) {
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.put("/update", authMiddleware, async (req, res) => {
+  try {
+    const roomId = req.user.roomId;
+    const { password } = req.body;
+
+    if (password === "")
+      return res.status(400).json({ error: "Password cannot be empty" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.query(updateRoomPasswordMutation(), [hashedPassword, roomId]);
+
+    res.status(200).json({ roomId });
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error", err });
   }
 });
 

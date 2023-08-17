@@ -22,10 +22,15 @@ const createRoomMutation = () => {
   return `INSERT INTO Rooms (room_name, password) VALUES (?, ?);`;
 };
 
+const updateRoomPasswordMutation = () => {
+  return `UPDATE Rooms SET password = ? WHERE id = ?`;
+};
+
 module.exports = {
   createDocumentMutation,
   updateDocumentTitleMutation,
   updateDocumentContentMutation,
+  updateRoomPasswordMutation,
   deleteDocumentMutation,
   createRoomMutation,
   deleteRoomMutation,
